@@ -52,8 +52,8 @@ class ViewHolder(private val binding: ItemCovidCaseBinding) : RecyclerView.ViewH
      * @return The width of the bar as an integer value.
      */
     private fun getBarWidth(cases: Int, maxCases: Int): Int {
-        // Asumiendo que tienes un ancho máximo para las barras
-        val maxWidth = 1000 // Deberías obtener esto basado en el ancho de la pantalla o del contenedor
+        // Assumming the max width the size of the phone
+        val maxWidth = 1000 
         return if (maxCases > 0) (cases.toFloat() / maxCases * maxWidth).toInt() else 0
     }
 }
