@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Examen_Mafer</string>
+    <string name="total_cases">Total cases: %1$d</string>
+    <string name="new_cases">New cases: %1$d</string>
 </resources>

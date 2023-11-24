@@ -1,5 +1,6 @@
 package com.example.kotlin.examen_mafer.data
 
+import com.example.kotlin.examen_mafer.data.network.ApiClient
 import com.example.kotlin.examen_mafer.data.network.model.ApiObject
 
 /**
@@ -7,7 +8,7 @@ import com.example.kotlin.examen_mafer.data.network.model.ApiObject
  *
  * @param apiService An instance of [ApiService] used for making API requests.
  */
-class ApiRepository(private val apiRepository: ApiRepository) {
+class ApiRepository(private val apiClient: ApiClient) {
     /**
      * Retrieves COVID-19 data for a specific country.
      *
@@ -16,6 +17,6 @@ class ApiRepository(private val apiRepository: ApiRepository) {
      *         or null in case of an exception.
      */
     suspend fun getCovidData(country: String): List<ApiObject>? {
-        return apiRepository.getCovidData(country)
+        return apiClient.getCovidData(country)
     }
 }
