@@ -13,9 +13,8 @@ import com.example.kotlin.examen_mafer.framework.viewModel.factory.MainViewModel
 
 class MainActivity: AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val apiRepository = ApiRepository(ApiClient())
-    private val viewModel: MainViewModel by viewModels { MainViewModelFactory(apiRepository) }
-    private val adapter: Adapter by lazy { Adapter(this) }
+    private val viewModel: MainViewModel by viewModels { MainViewModelFactory(ApiRepository(ApiClient())) }
+    private var adapter: Adapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,22 +22,32 @@ class MainActivity: AppCompatActivity() {
         setContentView(binding.root)
 
         setUpRecyclerView()
-        initializeObservers()
-        viewModel.getCovidData("mexico") // Cambia "Mexico" por el país que desees consultar
+
+        viewModel.maxCases.observe(this) { maxCases ->
+            if (adapter == null) {
+                adapter = Adapter(this, maxCases)
+                binding.recyclerview.adapter = adapter
+            } else {
+                adapter?.updateMaxCases(maxCases)
+            }
+        }
+
+        viewModel.covidData.observe(this) { apiObjects ->
+            apiObjects?.let { data ->
+                if (adapter == null) {
+                    // Asume que maxCases ya está establecido, puedes manejar este caso mejor dependiendo de tu lógica
+                    adapter = Adapter(this, viewModel.maxCases.value ?: 0)
+                    binding.recyclerview.adapter = adapter
+                }
+                adapter?.setData(data)
+            }
+        }
+
+        viewModel.getCovidData("Mexico")
     }
 
     private fun setUpRecyclerView() {
-        binding.recyclerview.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = this@MainActivity.adapter
-        }
-    }
-
-    private fun initializeObservers() {
-        viewModel.covidData.observe(this) { apiObjects ->
-            apiObjects?.let {
-                adapter.setData(it)
-            }
-        }
+        binding.recyclerview.layoutManager = LinearLayoutManager(this)
+        // El adapter se establecerá una vez que los datos estén disponibles
     }
 }

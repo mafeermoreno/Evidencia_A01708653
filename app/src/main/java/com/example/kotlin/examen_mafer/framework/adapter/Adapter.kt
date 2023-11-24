@@ -4,16 +4,19 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kotlin.examen_mafer.data.network.model.ApiDocument
 import com.example.kotlin.examen_mafer.data.network.model.ApiObject
 import com.example.kotlin.examen_mafer.databinding.ItemCovidCaseBinding
 import com.example.kotlin.examen_mafer.framework.adapter.viewHolders.ViewHolder
 
-class Adapter(private val context: Context) : RecyclerView.Adapter<ViewHolder>() {
-    private var data: List<ApiObject> = listOf()
+class Adapter(private val context: Context, private var maxCases: Int) : RecyclerView.Adapter<ViewHolder>() {
+    private var entries: List<Map.Entry<String, ApiDocument>> = listOf()
 
     // Actualiza los datos del adapter
     fun setData(newData: List<ApiObject>) {
-        data = newData
+        // Asumiendo que quieres mostrar todos los días disponibles en el JSON,
+        // convierte cada ApiObject en una lista de entradas y las almacena en 'entries'.
+        entries = newData.flatMap { it.cases.entries.toList() }
         notifyDataSetChanged()
     }
 
@@ -23,17 +26,15 @@ class Adapter(private val context: Context) : RecyclerView.Adapter<ViewHolder>()
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // Aquí necesitas decidir cómo manejarás la lista de casos, ya que ApiObject contiene un mapa.
-        // Por ejemplo, podrías querer mostrar un resumen o seleccionar un día específico.
-        val apiObject = data[position]
-        // Supongamos que solo queremos mostrar el último día reportado.
-        val lastEntry = apiObject.cases.entries.lastOrNull()
-        lastEntry?.let {
-            holder.bind(it, context)
-        }
+        holder.bind(entries[position], maxCases)
+    }
+
+    fun updateMaxCases(newMaxCases: Int) {
+        maxCases = newMaxCases
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {
-        return data.size
+        return entries.size
     }
 }
